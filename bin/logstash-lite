@@ -1,8 +1,0 @@
-#!/usr/bin/env ruby
-
-$: << File.dirname($0) + "/../lib"
-
-require "logstash-lite"
-
-agent = LogStashLite::Agent.new(ARGV)
-agent.run
