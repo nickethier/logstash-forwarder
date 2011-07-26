@@ -1,0 +1,8 @@
+#!/usr/bin/env ruby
+
+$: << File.dirname($0) + "/../lib"
+
+require "logstash-forwarder"
+
+agent = LogStashForwarder::Agent.new(ARGV)
+agent.run
