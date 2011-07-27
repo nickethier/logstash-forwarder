@@ -1,0 +1,10 @@
+TODO:
+  - Write test, unfortunatly they don't write themselves
+  - Add support for stdin and stdout
+  - implement -d and -l command line flags
+
+0.2.1 (Jul 26, 2011)
+  * First release
+  * Support for same command line args as current logstash version (1.0.14)
+  * Support for logstash file format
+  * Support for file input and amqp output 
