@@ -35,7 +35,8 @@ class LogStashForwarder::Agent
       "persistent" => true,
       "port" => 5672,
       "user" => "guest",
-      "vhost" => "/"
+      "vhost" => "/",
+      "key" => ""
     }
     @logger = LogStashForwarder::Logger.new(STDERR)
     @verbose = 0
@@ -70,6 +71,7 @@ class LogStashForwarder::Agent
           @amqp[:port] = conf[:parameters]["port"].first
           @amqp[:user] = conf[:parameters]["user"].first
           @amqp[:vhost] = conf[:parameters]["vhost"].first
+          @amqp[:key] = conf[:parameters]["key"].first
             
         else
           @logger.warn "Ignoring output #{conf[:plugin]}... Only amqp type outputs are supported."
@@ -109,9 +111,10 @@ class LogStashForwarder::Agent
           tail.tail(file)
         end #glob["files"].each
         tail.subscribe do |path, data|
-          event = LogStashForwarder::Event.new({"@host" => @nodename, "@source" => path, "@type" => tail.type, "@message"=>data})
-          exchange.publish(event.to_json, :routing_key => "logstash.event.raw.#{@nodename}.#{tail.type}", :persistent => @amqp[:persistent])
-          @logger.debug(["Sending event", { :destination => to_s, :event => event }])
+          event = LogStashForwarder::Event.new({"@type" => tail.type, "@message"=>data})
+	  event.source = "file://#{@nodename}#{path}"
+          exchange.publish(event.to_json, :routing_key => event.sprintf(@amqp[:key], :persistent => @amqp[:persistent])
+          @logger.debug(["Sending event", { :destination => to_s, :event => event, :key => event.sprintf(@amqp[:key])}])
         end #subscribe
       end #config["tail"].each
     end #end EventMachine
