@@ -113,7 +113,7 @@ class LogStashForwarder::Agent
         tail.subscribe do |path, data|
           event = LogStashForwarder::Event.new({"@type" => tail.type, "@message"=>data})
 	  event.source = "file://#{@nodename}#{path}"
-          exchange.publish(event.to_json, :routing_key => event.sprintf(@amqp[:key], :persistent => @amqp[:persistent])
+          exchange.publish(event.to_json, :routing_key => event.sprintf(@amqp[:key]), :persistent => @amqp[:persistent])
           @logger.debug(["Sending event", { :destination => to_s, :event => event, :key => event.sprintf(@amqp[:key])}])
         end #subscribe
       end #config["tail"].each
